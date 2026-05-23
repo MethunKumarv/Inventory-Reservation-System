@@ -74,7 +74,7 @@ export function ProductCard({ product }: ProductCardProps) {
             } | null
 
             if (existingPayload?.reservation?.status === "PENDING") {
-              router.push(`/reservations/${existingPayload.reservation.id}`)
+              router.push(`/reservations/${existingPayload.reservation.id}?resumed=1`)
               return
             }
           }

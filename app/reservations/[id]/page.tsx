@@ -8,10 +8,13 @@ export const dynamic = "force-dynamic"
 
 type ReservationPageProps = {
   params: Promise<{ id: string }>
+  searchParams?: Promise<{ resumed?: string | string[] }>
 }
 
-export default async function ReservationPage({ params }: ReservationPageProps) {
+export default async function ReservationPage({ params, searchParams }: ReservationPageProps) {
   const { id } = await params
+  const resolvedSearchParams = searchParams ? await searchParams : {}
+  const resumed = resolvedSearchParams.resumed === "1"
 
   const reservation = await prisma.reservation.findUnique({
     where: { id },
@@ -77,6 +80,7 @@ export default async function ReservationPage({ params }: ReservationPageProps) 
         }}
         initialRemainingMs={initialRemainingMs}
         initialExpired={initialExpired}
+        showResumeNotice={resumed}
       />
     </main>
   )

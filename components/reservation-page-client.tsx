@@ -36,6 +36,7 @@ type ReservationPageClientProps = {
   }
   initialRemainingMs: number
   initialExpired: boolean
+  showResumeNotice?: boolean
 }
 
 type ReservationResponse = {
@@ -47,7 +48,13 @@ function getReservationStorageKey(productId: string, warehouseId: string) {
   return `reservation:${productId}:${warehouseId}`
 }
 
-export function ReservationPageClient({ reservation: initialReservation, inventory, initialRemainingMs, initialExpired }: ReservationPageClientProps) {
+export function ReservationPageClient({
+  reservation: initialReservation,
+  inventory,
+  initialRemainingMs,
+  initialExpired,
+  showResumeNotice = false,
+}: ReservationPageClientProps) {
   const [reservation, setReservation] = useState(initialReservation)
   const [inventoryState, setInventoryState] = useState(inventory)
   const [serverError, setServerError] = useState<string | null>(null)
@@ -155,6 +162,12 @@ export function ReservationPageClient({ reservation: initialReservation, invento
       </CardHeader>
 
       <CardContent>
+        {showResumeNotice && reservation.status === "PENDING" ? (
+          <Alert variant="info" className="mb-4 border-cyan-400/30 bg-cyan-500/10 p-4 text-sm text-cyan-50">
+            You already have this reservation in progress. Please confirm or cancel it before reserving again.
+          </Alert>
+        ) : null}
+
         <div className="grid gap-4 md:grid-cols-3">
           <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
             <div className="text-xs uppercase tracking-[0.24em] text-white/50">Product</div>
