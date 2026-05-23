@@ -77,7 +77,7 @@ Seed demo data:
 npm run prisma:seed
 ```
 
-The seed script creates 5 products, 3 warehouses, and realistic inventory quantities.
+The seed script creates 6 products, 3 warehouses, and realistic inventory quantities.
 
 ## Environment Variables
 
