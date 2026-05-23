@@ -143,6 +143,7 @@ export function ProductCard({ product }: ProductCardProps) {
                 min={1}
                 value={quantity}
                 onChange={(event) => setQuantity(Math.max(1, Number(event.target.value) || 1))}
+                onWheel={(event) => event.currentTarget.blur()}
                 className="rounded-none border-0 bg-transparent focus-visible:ring-0"
               />
             </div>
