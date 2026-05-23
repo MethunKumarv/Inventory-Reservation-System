@@ -43,6 +43,10 @@ type ReservationResponse = {
   error?: string
 }
 
+function getReservationStorageKey(productId: string, warehouseId: string) {
+  return `reservation:${productId}:${warehouseId}`
+}
+
 export function ReservationPageClient({ reservation: initialReservation, inventory, initialRemainingMs, initialExpired }: ReservationPageClientProps) {
   const [reservation, setReservation] = useState(initialReservation)
   const [inventoryState, setInventoryState] = useState(inventory)
@@ -57,6 +61,17 @@ export function ReservationPageClient({ reservation: initialReservation, invento
   )
 
   const isEffectivelyExpired = isExpired
+
+  useEffect(() => {
+    const storageKey = getReservationStorageKey(reservation.productId, reservation.warehouseId)
+
+    if (reservation.status === "PENDING") {
+      window.localStorage.setItem(storageKey, reservation.id)
+      return
+    }
+
+    window.localStorage.removeItem(storageKey)
+  }, [reservation.id, reservation.productId, reservation.status, reservation.warehouseId])
 
   async function runAction(path: "confirm" | "release") {
     setServerError(null)

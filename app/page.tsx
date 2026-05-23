@@ -1,4 +1,5 @@
 import { Suspense } from "react"
+import Link from "next/link"
 
 import { ProductListClient } from "@/components/product-list-client"
 import { SkeletonGrid } from "@/components/skeleton-grid"
@@ -23,9 +24,13 @@ export default async function Home() {
     <main className="mx-auto min-h-screen max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       <div className="mb-10 flex flex-col gap-4 rounded-[2rem] border border-white/10 bg-white/5 p-8 backdrop-blur md:flex-row md:items-end md:justify-between">
         <div className="max-w-3xl space-y-3">
-          <div className="inline-flex rounded-full border border-cyan-300/20 bg-gradient-to-r from-cyan-400/15 via-emerald-400/15 to-blue-400/15 px-3 py-1 text-sm uppercase tracking-[0.3em] text-cyan-100 shadow-sm shadow-cyan-950/20">
+          <Link
+            href="/"
+            aria-label="Go to the landing page"
+            className="inline-flex rounded-full border border-cyan-300/20 bg-gradient-to-r from-cyan-400/15 via-emerald-400/15 to-blue-400/15 px-3 py-1 text-sm uppercase tracking-[0.3em] text-cyan-100 shadow-sm shadow-cyan-950/20 transition hover:scale-[1.01] hover:border-cyan-200/30 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--ring))] focus-visible:ring-offset-2 focus-visible:ring-offset-[hsl(var(--background))]"
+          >
             Inventory Reservation System
-          </div>
+          </Link>
           <h1 className="text-4xl font-semibold tracking-tight text-balance sm:text-5xl">
             Reserve stock safely while checkout is in progress.
           </h1>

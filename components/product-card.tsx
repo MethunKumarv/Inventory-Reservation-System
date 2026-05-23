@@ -25,6 +25,10 @@ type ProductCardProps = {
   }
 }
 
+function getReservationStorageKey(productId: string, warehouseId: string) {
+  return `reservation:${productId}:${warehouseId}`
+}
+
 export function ProductCard({ product }: ProductCardProps) {
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -55,6 +59,32 @@ export function ProductCard({ product }: ProductCardProps) {
     setIsSubmitting(true)
 
     try {
+      const storageKey = getReservationStorageKey(product.id, selectedWarehouse.warehouseId)
+      try {
+        const existingReservationId = window.localStorage.getItem(storageKey)
+
+        if (existingReservationId) {
+          const existingResponse = await fetch(`/api/reservations/${existingReservationId}`, {
+            cache: "no-store",
+          })
+
+          if (existingResponse.ok) {
+            const existingPayload = (await existingResponse.json().catch(() => null)) as {
+              reservation?: { id: string; status?: string }
+            } | null
+
+            if (existingPayload?.reservation?.status === "PENDING") {
+              router.push(`/reservations/${existingPayload.reservation.id}`)
+              return
+            }
+          }
+
+          window.localStorage.removeItem(storageKey)
+        }
+      } catch {
+        window.localStorage.removeItem(storageKey)
+      }
+
       const response = await fetch("/api/reservations", {
         method: "POST",
         headers: {
@@ -78,6 +108,8 @@ export function ProductCard({ product }: ProductCardProps) {
         setErrorMessage("Reservation response was incomplete.")
         return
       }
+
+      window.localStorage.setItem(storageKey, payload.reservation.id)
 
       router.push(`/reservations/${payload.reservation.id}`)
     } finally {
