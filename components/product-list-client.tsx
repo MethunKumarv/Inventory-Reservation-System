@@ -12,9 +12,17 @@ type ProductsResponse = { products: Product[] }
 
 type SortOption = "name-asc" | "name-desc" | "stock-desc" | "stock-asc"
 
-export function ProductListClient() {
-  const [products, setProducts] = useState<Product[] | null>(null)
-  const [loading, setLoading] = useState(true)
+type ProductListClientProps = {
+  initialProducts?: Product[]
+}
+
+function getTotalAvailableStock(product: Product) {
+  return product.warehouses.reduce((total, warehouse) => total + warehouse.availableStock, 0)
+}
+
+export function ProductListClient({ initialProducts }: ProductListClientProps) {
+  const [products, setProducts] = useState<Product[] | null>(initialProducts ?? null)
+  const [loading, setLoading] = useState(!initialProducts)
   const [error, setError] = useState<string | null>(null)
   const [sortBy, setSortBy] = useState<SortOption>("name-asc")
 
@@ -23,6 +31,7 @@ export function ProductListClient() {
       return null
     }
 
+    const stockByProductId = new Map(products.map((product) => [product.id, getTotalAvailableStock(product)]))
     const nextProducts = [...products]
 
     nextProducts.sort((left, right) => {
@@ -34,8 +43,8 @@ export function ProductListClient() {
         return right.name.localeCompare(left.name)
       }
 
-      const leftStock = left.warehouses.reduce((total, warehouse) => total + warehouse.availableStock, 0)
-      const rightStock = right.warehouses.reduce((total, warehouse) => total + warehouse.availableStock, 0)
+      const leftStock = stockByProductId.get(left.id) ?? 0
+      const rightStock = stockByProductId.get(right.id) ?? 0
 
       if (sortBy === "stock-desc") {
         return rightStock - leftStock || left.name.localeCompare(right.name)
@@ -48,6 +57,12 @@ export function ProductListClient() {
   }, [products, sortBy])
 
   useEffect(() => {
+    // When server-rendered products are already available, skip the extra
+    // client fetch so first paint is faster and we avoid duplicate work.
+    if (initialProducts) {
+      return
+    }
+
     let mounted = true
 
     async function fetchProducts() {
@@ -82,7 +97,7 @@ export function ProductListClient() {
     return () => {
       mounted = false
     }
-  }, [])
+  }, [initialProducts])
 
   if (loading) return <SkeletonGrid />
 
@@ -114,15 +129,7 @@ export function ProductListClient() {
 
       <section className="relative z-0 grid gap-6 lg:grid-cols-2">
         {sortedProducts?.map((product) => (
-          <ProductCard
-            key={product.id}
-            product={{
-              id: product.id,
-              name: product.name,
-              description: product.description ?? "",
-              warehouses: product.warehouses,
-            }}
-          />
+          <ProductCard key={product.id} product={product} />
         ))}
       </section>
     </div>

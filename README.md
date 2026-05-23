@@ -148,6 +148,31 @@ The cleanup endpoint finds expired `PENDING` reservations, releases inventory tr
 - Inline alerts for API errors and success states.
 - Countdown timer for reservation expiry.
 - Clear disabled button states during requests.
+- Warehouse dropdown keeps out-of-stock warehouses visible but non-selectable, and lists them after in-stock warehouses.
+- Reservation page shows both `Available` and `Reserved` stock values side by side, with a small legend for first-time users.
+- Reservation details highlights the selected warehouse name so users clearly see where confirmation applies.
+- Reservation details includes a one-click copy-to-clipboard icon for Reservation ID.
+- Home page hydrates product cards from server-fetched data to avoid a duplicate initial client-side fetch.
+- Product cards and stock badges are memoized to reduce unnecessary re-renders while sorting and interacting.
+- Full-screen transition loaders appear during home-to-reservation and reservation-to-home navigation for immediate feedback.
+- Product sorting precomputes stock totals so sort comparisons do less repeated work.
+- Hover-heavy effects are tuned down and applied only on hover-capable devices to improve responsiveness on low-end/touch devices.
+
+## UI Performance Notes
+
+- The transition loader is lightweight (single overlay + spinner) and only shown during navigation. It should not reduce steady-state page speed.
+- The loader overlay avoids blur-heavy effects to reduce GPU cost during transitions.
+
+## DevTools Profiling (Quick Steps)
+
+1. Open Chrome DevTools `Performance` tab.
+2. Enable screenshots and web vitals.
+3. Start recording, then perform: sort products, reserve item, navigate to reservation, return home.
+4. Stop recording and inspect:
+	- Long tasks above 50ms.
+	- Recalculate Style / Layout spikes during hover-heavy interactions.
+	- Paint/Composite bursts during transitions.
+5. Use React DevTools `Profiler` to capture `ProductListClient` interactions and verify minimal re-renders for unaffected product cards.
 
 ## Error Semantics
 

@@ -11,12 +11,12 @@ export function ReservationStatusBadge({ status, expired }: ReservationStatusBad
   }
 
   if (status === "CONFIRMED") {
-    return <Badge>CONFIRMED</Badge>
+    return <Badge className="bg-emerald-500 text-white">CONFIRMED</Badge>
   }
 
   if (status === "RELEASED") {
-    return <Badge variant="secondary">RELEASED</Badge>
+    return <Badge className="bg-sky-500 text-white">RELEASED</Badge>
   }
 
-  return <Badge variant="outline">PENDING</Badge>
+  return <Badge className="bg-amber-500 text-black">PENDING</Badge>
 }

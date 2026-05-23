@@ -20,6 +20,21 @@ export default async function Home() {
     },
   })
 
+  const initialProducts = products.map((product) => ({
+    id: product.id,
+    name: product.name,
+    description: product.description,
+    warehouses: product.inventory
+      .map((inventory) => ({
+        warehouseId: inventory.warehouseId,
+        warehouseName: inventory.warehouse.name,
+        totalQuantity: inventory.totalQuantity,
+        reservedQuantity: inventory.reservedQuantity,
+        availableStock: inventory.totalQuantity - inventory.reservedQuantity,
+      }))
+      .sort((left, right) => left.warehouseName.localeCompare(right.warehouseName)),
+  }))
+
   return (
     <main className="mx-auto min-h-screen max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       <div className="mb-10 flex flex-col gap-4 rounded-[2rem] border border-white/10 bg-white/5 p-8 backdrop-blur md:flex-row md:items-end md:justify-between">
@@ -39,13 +54,13 @@ export default async function Home() {
           </p>
         </div>
         <div className="grid gap-3 text-sm text-white/65 sm:grid-cols-3 md:min-w-[30rem] md:w-[32rem] lg:w-[34rem]">
-          <div className="flex h-full min-h-[7.5rem] flex-col items-center justify-between rounded-2xl border border-white/10 bg-black/20 p-4">
+          <div className="flex h-full min-h-[7.5rem] flex-col items-center justify-between rounded-2xl border border-white/10 bg-black/20 p-4 transition-all duration-200 ease-out supports-[hover:hover]:hover:-translate-y-0.5 supports-[hover:hover]:hover:border-white/18 supports-[hover:hover]:hover:bg-black/28">
             <div className="w-full text-center text-xs uppercase tracking-[0.24em] text-white/45">
               Products
             </div>
             <div className="w-full text-center text-2xl font-semibold leading-none text-white">{products.length}</div>
           </div>
-          <div className="flex h-full min-h-[7.5rem] flex-col items-center justify-between rounded-2xl border border-white/10 bg-black/20 p-4">
+          <div className="flex h-full min-h-[7.5rem] flex-col items-center justify-between rounded-2xl border border-white/10 bg-black/20 p-4 transition-all duration-200 ease-out supports-[hover:hover]:hover:-translate-y-0.5 supports-[hover:hover]:hover:border-white/18 supports-[hover:hover]:hover:bg-black/28">
             <div className="w-full text-center text-xs uppercase tracking-[0.24em] text-white/45">
               Warehouses
             </div>
@@ -53,7 +68,7 @@ export default async function Home() {
               {new Set(products.flatMap((product) => product.inventory.map((entry) => entry.warehouseId))).size}
             </div>
           </div>
-          <div className="flex h-full min-h-[7.5rem] flex-col items-center justify-between rounded-2xl border border-white/10 bg-black/20 p-4">
+          <div className="flex h-full min-h-[7.5rem] flex-col items-center justify-between rounded-2xl border border-white/10 bg-black/20 p-4 transition-all duration-200 ease-out supports-[hover:hover]:hover:-translate-y-0.5 supports-[hover:hover]:hover:border-white/18 supports-[hover:hover]:hover:bg-black/28">
             <div className="w-full text-center text-xs uppercase tracking-[0.24em] text-white/45">
               Inventory Rows
             </div>
@@ -65,7 +80,7 @@ export default async function Home() {
       </div>
 
       <Suspense fallback={<SkeletonGrid />}>
-        <ProductListClient />
+        <ProductListClient initialProducts={initialProducts} />
       </Suspense>
     </main>
   )

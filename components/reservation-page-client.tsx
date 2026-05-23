@@ -1,13 +1,13 @@
 "use client"
 
 import { useEffect, useMemo, useState } from "react"
-import Link from "next/link"
+import { useRouter } from "next/navigation"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { CountdownTimer } from "@/components/countdown-timer"
+import { PageTransitionLoader } from "@/components/page-transition-loader"
 import { ReservationStatusBadge } from "@/components/reservation-status-badge"
-import { StockBadge } from "@/components/stock-badge"
 import { Alert } from "@/components/alert"
 
 type ReservationPageClientProps = {
@@ -55,17 +55,22 @@ export function ReservationPageClient({
   initialExpired,
   showResumeNotice = false,
 }: ReservationPageClientProps) {
+  const router = useRouter()
   const [reservation, setReservation] = useState(initialReservation)
   const [inventoryState, setInventoryState] = useState(inventory)
   const [serverError, setServerError] = useState<string | null>(null)
   const [isExpired, setIsExpired] = useState(initialExpired)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [successMessage, setSuccessMessage] = useState<string | null>(null)
+  const [idCopied, setIdCopied] = useState(false)
+  const [isNavigatingHome, setIsNavigatingHome] = useState(false)
 
   const availableStock = useMemo(
     () => inventoryState.totalQuantity - inventoryState.reservedQuantity,
     [inventoryState],
   )
+
+  const reservedStock = useMemo(() => inventoryState.reservedQuantity, [inventoryState])
 
   const isEffectivelyExpired = isExpired
 
@@ -146,24 +151,58 @@ export function ReservationPageClient({
     }
   }, [reservation.id, reservation.status])
 
+  async function handleCopyReservationId() {
+    try {
+      await navigator.clipboard.writeText(reservation.id)
+      setIdCopied(true)
+      window.setTimeout(() => setIdCopied(false), 1200)
+    } catch {
+      setServerError("Unable to copy reservation ID. Please copy it manually.")
+    }
+  }
+
+  function handleGoHome() {
+    setIsNavigatingHome(true)
+    router.push("/")
+  }
+
   return (
-    <Card className="mx-auto w-full max-w-4xl">
-      <CardHeader>
+    <>
+      {isNavigatingHome ? <PageTransitionLoader label="Returning to products..." /> : null}
+      <Card className="mx-auto w-full max-w-4xl">
+        <CardHeader>
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
             <CardTitle>Reservation Details</CardTitle>
             <CardDescription className="space-y-1">
-              <span className="block">ID: {reservation.id}</span>
-              <span className="block">{reservation.product.name} reserved at {reservation.warehouse.name}</span>
+              <span className="flex flex-wrap items-center gap-2">
+                <span>ID: {reservation.id}</span>
+                <button
+                  type="button"
+                  onClick={handleCopyReservationId}
+                  className="inline-flex h-6 w-6 items-center justify-center rounded-md border border-white/15 bg-white/10 text-white/75 transition hover:bg-white/20 hover:text-white"
+                  aria-label="Copy reservation ID"
+                  title={idCopied ? "Copied" : "Copy reservation ID"}
+                >
+                  <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <rect x="9" y="9" width="11" height="11" rx="2" />
+                    <path d="M5 15V5a1 1 0 0 1 1-1h10" />
+                  </svg>
+                </button>
+                {idCopied ? <span className="text-[0.7rem] text-emerald-300">Copied</span> : null}
+              </span>
+              <span className="block">
+                {reservation.product.name} reserved at <span className="font-semibold text-amber-300">{reservation.warehouse.name}</span>
+              </span>
             </CardDescription>
           </div>
           <ReservationStatusBadge status={reservation.status} expired={isEffectivelyExpired} />
         </div>
-      </CardHeader>
+        </CardHeader>
 
-      <CardContent>
+        <CardContent>
         {showResumeNotice && reservation.status === "PENDING" ? (
-          <Alert variant="info" className="mb-4 border-cyan-400/30 bg-cyan-500/10 p-4 text-sm text-cyan-50">
+          <Alert variant="error" className="mb-4 border-rose-400/50 bg-rose-500/10 p-4 text-sm text-rose-50">
             You already have this reservation in progress. Please confirm or cancel it before reserving again.
           </Alert>
         ) : null}
@@ -196,7 +235,22 @@ export function ReservationPageClient({
                 </div>
               </div>
             )}
-            <StockBadge availableStock={availableStock} totalQuantity={inventory.totalQuantity} />
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+              <div className="text-xs uppercase tracking-[0.24em] text-white/50">Stock snapshot</div>
+              <div className="mt-1 text-[0.7rem] text-white/60">
+                Available = free units now. Reserved = units currently held.
+              </div>
+              <div className="mt-3 grid grid-cols-2 gap-3">
+                <div className="rounded-xl border border-white/10 bg-white/5 p-3">
+                  <div className="text-[0.65rem] font-semibold uppercase tracking-[0.22em] text-white/55">Available</div>
+                  <div className="mt-1 text-2xl font-semibold text-white">{availableStock}</div>
+                </div>
+                <div className="rounded-xl border border-white/10 bg-white/5 p-3">
+                  <div className="text-[0.65rem] font-semibold uppercase tracking-[0.22em] text-white/55">Reserved</div>
+                  <div className="mt-1 text-2xl font-semibold text-white">{reservedStock}</div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -245,9 +299,9 @@ export function ReservationPageClient({
             </div>
           </Alert>
         ) : null}
-      </CardContent>
+        </CardContent>
 
-      <CardFooter>
+        <CardFooter>
         <Button onClick={() => runAction("confirm")} disabled={isSubmitting || reservation.status !== "PENDING" || isEffectivelyExpired}>
           {isSubmitting ? "Processing..." : "Confirm Purchase"}
         </Button>
@@ -258,13 +312,15 @@ export function ReservationPageClient({
         >
           Cancel
         </Button>
-        <Link
-          href="/"
+        <button
+          type="button"
+          onClick={handleGoHome}
           className="inline-flex h-10 items-center justify-center rounded-full border border-white/15 bg-white/10 px-4 text-sm font-medium text-[hsl(var(--foreground))] transition hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--ring))] focus-visible:ring-offset-2 focus-visible:ring-offset-[hsl(var(--background))]"
         >
           Go Home
-        </Link>
-      </CardFooter>
-    </Card>
+        </button>
+        </CardFooter>
+      </Card>
+    </>
   )
 }
