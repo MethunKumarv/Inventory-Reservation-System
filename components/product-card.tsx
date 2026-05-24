@@ -152,17 +152,17 @@ function ProductCardInner({ product }: ProductCardProps) {
       {isNavigating ? <PageTransitionLoader label="Opening reservation..." /> : null}
       <Card className="h-full transition-all duration-200 ease-out hover:-translate-y-1 hover:scale-[1.01] hover:border-cyan-300/35 hover:bg-cyan-300/8 hover:shadow-[0_16px_40px_rgba(34,211,238,0.16)]">
         <CardHeader>
-          <div className="flex items-start justify-between gap-4">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
             <div className="min-w-0">
               <CardTitle className="text-balance">{product.name}</CardTitle>
               <CardDescription className="text-balance">{product.description ?? ""}</CardDescription>
             </div>
-            <div className="shrink-0 text-right">
+            <div className="shrink-0 text-left sm:text-right">
               <div className="text-[0.65rem] uppercase tracking-[0.24em] text-white/45">Available</div>
               {/* color the total available according to thresholds: 0=red, <=3=amber, >3=green */}
               <div
                 className={
-                  "mt-1 text-lg font-semibold leading-none " +
+                  "mt-1 text-lg font-semibold leading-none sm:text-right " +
                   (totalAvailableStock === 0
                     ? "text-red-400"
                     : totalAvailableStock <= 3
@@ -239,6 +239,8 @@ function ProductCardInner({ product }: ProductCardProps) {
                   min={1}
                   value={quantity}
                   onChange={(event) => setQuantity(Math.max(1, Number(event.target.value) || 1))}
+                  onFocus={(event) => event.currentTarget.select()}
+                  onPointerDown={(event) => event.currentTarget.select()}
                   onWheel={(event) => event.currentTarget.blur()}
                   className="rounded-none border-0 bg-transparent focus-visible:ring-0"
                 />

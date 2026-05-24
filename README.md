@@ -165,6 +165,7 @@ The cleanup endpoint finds expired `PENDING` reservations, releases inventory tr
 - Product sorting precomputes stock totals so sort comparisons do less repeated work.
 - Hover-heavy effects are tuned down and applied only on hover-capable devices to improve responsiveness on low-end/touch devices.
 - Responsive breakpoints are adjusted so tablet and mobile layouts stack more naturally instead of jumping to dense multi-column arrangements too early.
+- The home hero stat cards stay single-column on narrow screens and use a shorter compact height so the labels do not crowd or overlap.
 - Desktop hover feedback is restored on product cards and the three home stat boxes.
 - Warehouse selection and quantity input now share the same cyan-tinted hover surface for a consistent form feel.
 - Touch screens do not have true hover, so the controls now also show the same cyan state on tap/active for better mobile feedback.
