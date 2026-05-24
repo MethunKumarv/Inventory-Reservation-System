@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react"
 import { useRouter } from "next/navigation"
 
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { CountdownTimer } from "@/components/countdown-timer"
 import { PageTransitionLoader } from "@/components/page-transition-loader"
 import { ReservationStatusBadge } from "@/components/reservation-status-badge"
@@ -62,7 +62,7 @@ export function ReservationPageClient({
   const [isExpired, setIsExpired] = useState(initialExpired)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [successMessage, setSuccessMessage] = useState<string | null>(null)
-  const [idCopied, setIdCopied] = useState(false)
+  const [copiedField, setCopiedField] = useState<"reservation" | "product" | "warehouse" | null>(null)
   const [isNavigatingHome, setIsNavigatingHome] = useState(false)
 
   const availableStock = useMemo(
@@ -151,13 +151,13 @@ export function ReservationPageClient({
     }
   }, [reservation.id, reservation.status])
 
-  async function handleCopyReservationId() {
+  async function handleCopyValue(value: string, field: "reservation" | "product" | "warehouse") {
     try {
-      await navigator.clipboard.writeText(reservation.id)
-      setIdCopied(true)
-      window.setTimeout(() => setIdCopied(false), 1200)
+      await navigator.clipboard.writeText(value)
+      setCopiedField(field)
+      window.setTimeout(() => setCopiedField(null), 1200)
     } catch {
-      setServerError("Unable to copy reservation ID. Please copy it manually.")
+      setServerError("Unable to copy the selected ID. Please copy it manually.")
     }
   }
 
@@ -171,30 +171,80 @@ export function ReservationPageClient({
       {isNavigatingHome ? <PageTransitionLoader label="Returning to products..." /> : null}
       <Card className="mx-auto w-full max-w-4xl">
         <CardHeader>
-        <div className="flex flex-wrap items-start justify-between gap-4">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div>
-            <CardTitle>Reservation Details</CardTitle>
-            <CardDescription className="space-y-1">
-              <span className="flex flex-wrap items-center gap-2">
-                <span>ID: {reservation.id}</span>
-                <button
-                  type="button"
-                  onClick={handleCopyReservationId}
-                  className="inline-flex h-6 w-6 items-center justify-center rounded-md border border-white/15 bg-white/10 text-white/75 transition hover:bg-white/20 hover:text-white"
-                  aria-label="Copy reservation ID"
-                  title={idCopied ? "Copied" : "Copy reservation ID"}
-                >
-                  <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                    <rect x="9" y="9" width="11" height="11" rx="2" />
-                    <path d="M5 15V5a1 1 0 0 1 1-1h10" />
-                  </svg>
-                </button>
-                {idCopied ? <span className="text-[0.7rem] text-emerald-300">Copied</span> : null}
-              </span>
-              <span className="block">
+            <CardTitle className="text-2xl tracking-tight text-balance sm:text-3xl">Reservation Details</CardTitle>
+            <div className="mt-2 text-sm text-white/65">
+              <div className="overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-r from-white/6 via-white/5 to-white/6 shadow-[0_12px_34px_rgba(0,0,0,0.14)] ring-1 ring-white/5 backdrop-blur-sm">
+                <div className="grid gap-3 sm:grid-cols-3 sm:gap-0 sm:divide-x sm:divide-white/10">
+                  <div className="flex flex-col items-start gap-2 px-4 py-4 transition-colors hover:bg-white/4 sm:flex-row sm:items-center sm:gap-3">
+                    <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+                      <span className="text-[0.68rem] font-semibold uppercase tracking-[0.24em] text-white/45">Reservation ID</span>
+                      <span className="break-all font-mono text-[0.82rem] leading-snug text-white/88 sm:truncate sm:text-[0.92rem] sm:leading-normal">
+                        {reservation.id}
+                      </span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => handleCopyValue(reservation.id, "reservation")}
+                      className="inline-flex h-8 w-8 shrink-0 items-center justify-center self-end rounded-lg border border-white/15 bg-white/10 text-white/75 transition hover:border-cyan-300/30 hover:bg-cyan-300/10 hover:text-white sm:self-auto"
+                      aria-label="Copy reservation ID"
+                      title={copiedField === "reservation" ? "Copied" : "Copy reservation ID"}
+                    >
+                      <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                        <rect x="9" y="9" width="11" height="11" rx="2" />
+                        <path d="M5 15V5a1 1 0 0 1 1-1h10" />
+                      </svg>
+                    </button>
+                  </div>
+
+                  <div className="flex flex-col items-start gap-2 px-4 py-4 transition-colors hover:bg-white/4 sm:flex-row sm:items-center sm:gap-3">
+                    <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+                      <span className="text-[0.68rem] font-semibold uppercase tracking-[0.24em] text-white/45">Product ID</span>
+                      <span className="break-all font-mono text-[0.82rem] leading-snug text-white/88 sm:truncate sm:text-[0.92rem] sm:leading-normal">
+                        {reservation.product.id}
+                      </span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => handleCopyValue(reservation.product.id, "product")}
+                      className="inline-flex h-8 w-8 shrink-0 items-center justify-center self-end rounded-lg border border-white/15 bg-white/10 text-white/75 transition hover:border-cyan-300/30 hover:bg-cyan-300/10 hover:text-white sm:self-auto"
+                      aria-label="Copy product ID"
+                      title={copiedField === "product" ? "Copied" : "Copy product ID"}
+                    >
+                      <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                        <rect x="9" y="9" width="11" height="11" rx="2" />
+                        <path d="M5 15V5a1 1 0 0 1 1-1h10" />
+                      </svg>
+                    </button>
+                  </div>
+
+                  <div className="flex flex-col items-start gap-2 px-4 py-4 transition-colors hover:bg-white/4 sm:flex-row sm:items-center sm:gap-3">
+                    <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+                      <span className="text-[0.68rem] font-semibold uppercase tracking-[0.24em] text-white/45">Warehouse ID</span>
+                      <span className="break-all font-mono text-[0.82rem] leading-snug text-white/88 sm:truncate sm:text-[0.92rem] sm:leading-normal">
+                        {reservation.warehouse.id}
+                      </span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => handleCopyValue(reservation.warehouse.id, "warehouse")}
+                      className="inline-flex h-8 w-8 shrink-0 items-center justify-center self-end rounded-lg border border-white/15 bg-white/10 text-white/75 transition hover:border-cyan-300/30 hover:bg-cyan-300/10 hover:text-white sm:self-auto"
+                      aria-label="Copy warehouse ID"
+                      title={copiedField === "warehouse" ? "Copied" : "Copy warehouse ID"}
+                    >
+                      <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                        <rect x="9" y="9" width="11" height="11" rx="2" />
+                        <path d="M5 15V5a1 1 0 0 1 1-1h10" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <span className="mt-2 block text-sm text-white/70">
                 {reservation.product.name} reserved at <span className="font-semibold text-amber-300">{reservation.warehouse.name}</span>
               </span>
-            </CardDescription>
+            </div>
           </div>
           <ReservationStatusBadge status={reservation.status} expired={isEffectivelyExpired} />
         </div>
@@ -207,7 +257,7 @@ export function ReservationPageClient({
           </Alert>
         ) : null}
 
-        <div className="grid gap-4 md:grid-cols-3">
+        <div className="grid gap-4 lg:grid-cols-3">
           <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
             <div className="text-xs uppercase tracking-[0.24em] text-white/50">Product</div>
             <div className="mt-1 text-lg font-semibold">{reservation.product.name}</div>
@@ -240,7 +290,7 @@ export function ReservationPageClient({
               <div className="mt-1 text-[0.7rem] text-white/60">
                 Available = free units now. Reserved = units currently held.
               </div>
-              <div className="mt-3 grid grid-cols-2 gap-3">
+              <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <div className="rounded-xl border border-white/10 bg-white/5 p-3">
                   <div className="text-[0.65rem] font-semibold uppercase tracking-[0.22em] text-white/55">Available</div>
                   <div className="mt-1 text-2xl font-semibold text-white">{availableStock}</div>
@@ -301,12 +351,13 @@ export function ReservationPageClient({
         ) : null}
         </CardContent>
 
-        <CardFooter>
-        <Button onClick={() => runAction("confirm")} disabled={isSubmitting || reservation.status !== "PENDING" || isEffectivelyExpired}>
+        <CardFooter className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+        <Button className="w-full sm:w-auto" onClick={() => runAction("confirm")} disabled={isSubmitting || reservation.status !== "PENDING" || isEffectivelyExpired}>
           {isSubmitting ? "Processing..." : "Confirm Purchase"}
         </Button>
         <Button
           variant="secondary"
+          className="w-full sm:w-auto"
           onClick={() => runAction("release")}
           disabled={isSubmitting || reservation.status !== "PENDING" || isEffectivelyExpired}
         >
@@ -315,7 +366,7 @@ export function ReservationPageClient({
         <button
           type="button"
           onClick={handleGoHome}
-          className="inline-flex h-10 items-center justify-center rounded-full border border-white/15 bg-white/10 px-4 text-sm font-medium text-[hsl(var(--foreground))] transition hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--ring))] focus-visible:ring-offset-2 focus-visible:ring-offset-[hsl(var(--background))]"
+          className="inline-flex h-10 w-full items-center justify-center rounded-full border border-white/15 bg-white/10 px-4 text-sm font-medium text-[hsl(var(--foreground))] transition hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--ring))] focus-visible:ring-offset-2 focus-visible:ring-offset-[hsl(var(--background))] sm:w-auto"
         >
           Go Home
         </button>

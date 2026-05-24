@@ -30,6 +30,9 @@ function getReservationStorageKey(productId: string, warehouseId: string) {
   return `reservation:${productId}:${warehouseId}`
 }
 
+const interactiveFieldClass =
+  "flex items-stretch overflow-hidden rounded-xl border border-white/10 bg-white/5 transition hover:border-cyan-300/25 hover:bg-cyan-300/8 active:border-cyan-300/25 active:bg-cyan-300/8 focus-within:border-[hsl(var(--ring))] focus-within:ring-2 focus-within:ring-[hsl(var(--ring))]/20"
+
 function ProductCardInner({ product }: ProductCardProps) {
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -147,7 +150,7 @@ function ProductCardInner({ product }: ProductCardProps) {
   return (
     <>
       {isNavigating ? <PageTransitionLoader label="Opening reservation..." /> : null}
-      <Card className="h-full transition-all duration-200 ease-out supports-[hover:hover]:hover:-translate-y-0.5 supports-[hover:hover]:hover:border-cyan-300/35 supports-[hover:hover]:hover:bg-cyan-300/8 supports-[hover:hover]:hover:shadow-lg">
+      <Card className="h-full transition-all duration-200 ease-out hover:-translate-y-1 hover:scale-[1.01] hover:border-cyan-300/35 hover:bg-cyan-300/8 hover:shadow-[0_16px_40px_rgba(34,211,238,0.16)]">
         <CardHeader>
           <div className="flex items-start justify-between gap-4">
             <div className="min-w-0">
@@ -177,7 +180,7 @@ function ProductCardInner({ product }: ProductCardProps) {
             {product.warehouses.map((warehouse) => (
               <div
                 key={warehouse.warehouseId}
-                className="flex items-center justify-between gap-3 rounded-2xl border border-white/8 bg-white/5 px-4 py-3 transition-colors duration-200 ease-out supports-[hover:hover]:hover:border-cyan-300/20 supports-[hover:hover]:hover:bg-cyan-300/8"
+                className="flex items-center justify-between gap-3 rounded-2xl border border-white/8 bg-white/5 px-4 py-3 transition-all duration-200 ease-out hover:-translate-y-0.5 hover:border-cyan-300/25 hover:bg-cyan-300/10 hover:shadow-[0_8px_24px_rgba(34,211,238,0.12)]"
               >
                 <div>
                   <div className="text-sm font-medium text-white">{warehouse.warehouseName}</div>
@@ -209,8 +212,8 @@ function ProductCardInner({ product }: ProductCardProps) {
                       disabled={warehouse.availableStock === 0}
                       className={warehouse.availableStock === 0 ? "!opacity-100" : undefined}
                     >
-                      <span className="flex w-full items-center justify-between gap-3">
-                        <span className="truncate">{warehouse.warehouseName}</span>
+                      <span className="flex w-full items-start justify-between gap-3">
+                        <span className="min-w-0 flex-1 whitespace-normal break-words">{warehouse.warehouseName}</span>
                         <span className="shrink-0">
                           {warehouse.availableStock === 0 ? (
                             <span className="font-medium text-rose-300">Out of stock</span>
@@ -229,7 +232,7 @@ function ProductCardInner({ product }: ProductCardProps) {
 
             <div className="space-y-2">
               <Label htmlFor={`quantity-${product.id}`}>Quantity</Label>
-              <div className="flex items-stretch overflow-hidden rounded-xl border border-white/10 bg-white/5 transition hover:border-white/20 hover:bg-white/10 focus-within:border-[hsl(var(--ring))] focus-within:ring-2 focus-within:ring-[hsl(var(--ring))]/20">
+              <div className={interactiveFieldClass}>
                 <Input
                   id={`quantity-${product.id}`}
                   type="number"

@@ -20,12 +20,6 @@ export async function POST(request: Request) {
   try {
     const payload = await parseJsonBody(request, createReservationSchema)
 
-    console.info("[reservation] transaction started", {
-      productId: payload.productId,
-      warehouseId: payload.warehouseId,
-      quantity: payload.quantity,
-    })
-
     const reservation = await prisma.$transaction(
       (tx) => reserveInventory(tx, payload),
       {
@@ -33,13 +27,6 @@ export async function POST(request: Request) {
         timeout: 20000,
       },
     )
-
-    console.info("[reservation] transaction committed", {
-      reservationId: reservation.id,
-      productId: reservation.productId,
-      warehouseId: reservation.warehouseId,
-      quantity: reservation.quantity,
-    })
 
     return NextResponse.json({ reservation }, { status: 201 })
   } catch (error) {

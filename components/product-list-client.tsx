@@ -109,9 +109,9 @@ export function ProductListClient({ initialProducts }: ProductListClientProps) {
   return (
     <div className="space-y-5">
       <div className="relative z-20 flex items-center justify-end">
-        <div className="flex items-center gap-3">
+        <div className="flex w-full flex-col items-stretch gap-3 sm:w-auto sm:flex-row sm:items-center">
           <div className="text-xs uppercase tracking-[0.24em] text-white/45">Sort products</div>
-          <div className="w-full max-w-[14rem] sm:w-56">
+          <div className="w-full sm:w-56">
             <Select value={sortBy} onValueChange={(value) => setSortBy(value as SortOption)}>
               <SelectTrigger className="bg-black/20">
                 <SelectValue placeholder="Sort products" />

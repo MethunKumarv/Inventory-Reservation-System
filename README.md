@@ -43,6 +43,12 @@ Set your PostgreSQL connection string in `.env.local`:
 DATABASE_URL="postgresql://USER:PASSWORD@HOST:5432/DATABASE"
 ```
 
+Optional local debug flag for reservation logging:
+
+```bash
+RESERVATION_DEBUG="false"
+```
+
 This project uses a single `DATABASE_URL`. There is no separate shadow database configuration.
 
 ## Prisma Commands
@@ -82,6 +88,7 @@ The seed script creates 6 products, 3 warehouses, and realistic inventory quanti
 ## Environment Variables
 
 - `DATABASE_URL` - PostgreSQL connection string used by Prisma and the app.
+- `RESERVATION_DEBUG` - optional local flag to enable reservation service logs when set to `"true"`.
 
 The example file [`.env.example`](.env.example) is included for local setup.
 
@@ -151,17 +158,27 @@ The cleanup endpoint finds expired `PENDING` reservations, releases inventory tr
 - Warehouse dropdown keeps out-of-stock warehouses visible but non-selectable, and lists them after in-stock warehouses.
 - Reservation page shows both `Available` and `Reserved` stock values side by side, with a small legend for first-time users.
 - Reservation details highlights the selected warehouse name so users clearly see where confirmation applies.
-- Reservation details includes a one-click copy-to-clipboard icon for Reservation ID.
+- Reservation details includes one-click copy-to-clipboard icons for Reservation, Product, and Warehouse IDs.
 - Home page hydrates product cards from server-fetched data to avoid a duplicate initial client-side fetch.
 - Product cards and stock badges are memoized to reduce unnecessary re-renders while sorting and interacting.
 - Full-screen transition loaders appear during home-to-reservation and reservation-to-home navigation for immediate feedback.
 - Product sorting precomputes stock totals so sort comparisons do less repeated work.
 - Hover-heavy effects are tuned down and applied only on hover-capable devices to improve responsiveness on low-end/touch devices.
+- Responsive breakpoints are adjusted so tablet and mobile layouts stack more naturally instead of jumping to dense multi-column arrangements too early.
+- Desktop hover feedback is restored on product cards and the three home stat boxes.
+- Warehouse selection and quantity input now share the same cyan-tinted hover surface for a consistent form feel.
+- Touch screens do not have true hover, so the controls now also show the same cyan state on tap/active for better mobile feedback.
+- Warehouse names in the dropdown now wrap instead of truncating, and the dropdown panel can expand wider so long names stay readable.
+- Opening a warehouse dropdown now automatically closes any other open dropdown so only one stays open at a time.
+- The warehouse dropdown now stays constrained to its card/trigger width instead of overflowing the product card.
+- The active dropdown root is raised above neighboring cards so the menu is not hidden behind the next product card.
 
 ## UI Performance Notes
 
 - The transition loader is lightweight (single overlay + spinner) and only shown during navigation. It should not reduce steady-state page speed.
 - The loader overlay avoids blur-heavy effects to reduce GPU cost during transitions.
+- Different devices still use different breakpoints, so the interface adapts to screen size rather than looking identical everywhere. The goal is a consistent structure and workflow, not pixel-for-pixel sameness.
+- Hover effects are intentionally stronger on desktop and lighter on touch devices so the UI stays responsive without losing interactive feedback.
 
 ## DevTools Profiling (Quick Steps)
 

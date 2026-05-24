@@ -5,6 +5,7 @@ import * as React from "react"
 import { cn } from "@/lib/utils"
 
 type SelectContextValue = {
+  id: string
   value: string
   open: boolean
   setOpen: React.Dispatch<React.SetStateAction<boolean>>
@@ -31,11 +32,20 @@ type SelectProps = {
 
 export function Select({ value, onValueChange, children }: SelectProps) {
   const [open, setOpen] = React.useState(false)
+  const selectId = React.useId()
 
   React.useEffect(() => {
     function handleDocumentClick(event: MouseEvent) {
       const target = event.target as HTMLElement | null
       if (!target?.closest("[data-select-root='true']")) {
+        setOpen(false)
+      }
+    }
+
+    function handleOtherSelectOpen(event: Event) {
+      const customEvent = event as CustomEvent<{ id: string }>
+
+      if (customEvent.detail?.id !== selectId) {
         setOpen(false)
       }
     }
@@ -48,26 +58,37 @@ export function Select({ value, onValueChange, children }: SelectProps) {
 
     document.addEventListener("mousedown", handleDocumentClick)
     document.addEventListener("keydown", handleEscape)
+    window.addEventListener("select-open", handleOtherSelectOpen as EventListener)
 
     return () => {
       document.removeEventListener("mousedown", handleDocumentClick)
       document.removeEventListener("keydown", handleEscape)
+      window.removeEventListener("select-open", handleOtherSelectOpen as EventListener)
     }
-  }, [])
+  }, [selectId])
+
+  React.useEffect(() => {
+    if (!open) {
+      return
+    }
+
+    window.dispatchEvent(new CustomEvent("select-open", { detail: { id: selectId } }))
+  }, [open, selectId])
 
   const contextValue = React.useMemo(
     () => ({
+      id: selectId,
       value,
       open,
       setOpen,
       selectValue: onValueChange,
     }),
-    [onValueChange, open, value],
+    [onValueChange, open, selectId, value],
   )
 
   return (
     <SelectContext.Provider value={contextValue}>
-      <div data-select-root="true" className="relative">
+      <div data-select-root="true" className={cn("relative", open && "z-50") }>
         {children}
       </div>
     </SelectContext.Provider>
@@ -83,7 +104,7 @@ export function SelectTrigger({ className, children, ...props }: React.ButtonHTM
       aria-expanded={open}
       onClick={() => setOpen((current) => !current)}
       className={cn(
-        "flex h-10 w-full items-center justify-between gap-3 rounded-xl border border-white/10 bg-white/5 px-3 text-left text-sm text-[hsl(var(--foreground))] outline-none transition hover:border-white/20 hover:bg-white/10 focus:border-[hsl(var(--ring))] focus:ring-2 focus:ring-[hsl(var(--ring))]/20",
+        "flex h-10 w-full items-center justify-between gap-3 rounded-xl border border-white/10 bg-white/5 px-3 text-left text-sm text-[hsl(var(--foreground))] outline-none transition hover:border-cyan-300/25 hover:bg-cyan-300/8 active:border-cyan-300/25 active:bg-cyan-300/8 focus:border-[hsl(var(--ring))] focus:ring-2 focus:ring-[hsl(var(--ring))]/20",
         className,
       )}
       {...props}
@@ -128,7 +149,7 @@ export function SelectContent({ className, children }: React.HTMLAttributes<HTML
     <div
       role="listbox"
       className={cn(
-        "absolute left-0 right-0 top-[calc(100%+0.5rem)] z-50 max-h-64 overflow-auto rounded-2xl border border-white/10 bg-[hsl(var(--card))] p-1 shadow-[0_25px_80px_rgba(0,0,0,0.45)] ring-1 ring-white/5",
+        "absolute left-0 top-[calc(100%+0.5rem)] z-50 max-h-64 w-full max-w-full overflow-auto rounded-2xl border border-white/10 bg-[hsl(var(--card))] p-1 shadow-[0_25px_80px_rgba(0,0,0,0.45)] ring-1 ring-white/5",
         className,
       )}
     >
@@ -164,7 +185,7 @@ export function SelectItem({ className, children, value, disabled, ...props }: S
       )}
       {...props}
     >
-      <span className="truncate">{children}</span>
+      <span className="min-w-0 flex-1 whitespace-normal break-words">{children}</span>
       {isSelected ? <span className="ml-3 text-xs text-white/70">Selected</span> : null}
     </button>
   )

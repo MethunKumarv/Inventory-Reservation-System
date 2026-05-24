@@ -35,7 +35,14 @@ const reservationRelationsInclude = {
   warehouse: true,
 } as const
 
+const isReservationDebugEnabled =
+  process.env.NODE_ENV !== "production" && process.env.RESERVATION_DEBUG === "true"
+
 function logReservationEvent(message: string, details?: Record<string, unknown>) {
+  if (!isReservationDebugEnabled) {
+    return
+  }
+
   if (details) {
     console.info(`[reservation] ${message}`, details)
     return
