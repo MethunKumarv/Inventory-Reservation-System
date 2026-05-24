@@ -154,7 +154,7 @@ function ProductCardInner({ product }: ProductCardProps) {
         <CardHeader>
           <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
             <div className="min-w-0">
-              <CardTitle className="text-balance">{product.name}</CardTitle>
+              <CardTitle className="text-balance text-2xl sm:text-[1.7rem]">{product.name}</CardTitle>
               <CardDescription className="text-balance">{product.description ?? ""}</CardDescription>
             </div>
             <div className="shrink-0 text-left sm:text-right">

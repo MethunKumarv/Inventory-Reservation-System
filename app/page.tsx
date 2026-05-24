@@ -54,22 +54,22 @@ export default async function Home() {
           </p>
         </div>
         <div className="grid gap-3 text-sm text-white/65 lg:grid-cols-3 lg:min-w-[34rem] lg:w-[34rem]">
-          <div className="flex h-full min-h-[6.25rem] flex-col items-center justify-between rounded-2xl border border-white/10 bg-black/20 p-3 transition-all duration-200 ease-out hover:-translate-y-1 hover:scale-[1.01] hover:border-white/18 hover:bg-black/28 hover:shadow-[0_14px_30px_rgba(0,0,0,0.18)] sm:min-h-[7.5rem] sm:p-4">
-            <div className="w-full text-center text-[0.48rem] uppercase leading-none tracking-[0.02em] text-white/45 sm:text-xs sm:leading-4 sm:tracking-[0.24em]">
+          <div className="flex h-full min-h-[5.75rem] flex-col items-center justify-between rounded-2xl border border-white/10 bg-black/20 p-2.5 transition-all duration-200 ease-out hover:-translate-y-1 hover:scale-[1.01] hover:border-white/18 hover:bg-black/28 hover:shadow-[0_14px_30px_rgba(0,0,0,0.18)] sm:min-h-[7.5rem] sm:p-4">
+            <div className="w-full text-center text-[0.56rem] font-medium uppercase leading-tight tracking-[0.06em] text-white/50 sm:text-xs sm:leading-4 sm:tracking-[0.24em]">
               Products
             </div>
             <div className="w-full text-center text-xl font-semibold leading-none text-white sm:text-2xl">{products.length}</div>
           </div>
-          <div className="flex h-full min-h-[6.25rem] flex-col items-center justify-between rounded-2xl border border-white/10 bg-black/20 p-3 transition-all duration-200 ease-out hover:-translate-y-1 hover:scale-[1.01] hover:border-white/18 hover:bg-black/28 hover:shadow-[0_14px_30px_rgba(0,0,0,0.18)] sm:min-h-[7.5rem] sm:p-4">
-            <div className="w-full text-center text-[0.48rem] uppercase leading-none tracking-[0.02em] text-white/45 sm:text-xs sm:leading-4 sm:tracking-[0.24em]">
+          <div className="flex h-full min-h-[5.75rem] flex-col items-center justify-between rounded-2xl border border-white/10 bg-black/20 p-2.5 transition-all duration-200 ease-out hover:-translate-y-1 hover:scale-[1.01] hover:border-white/18 hover:bg-black/28 hover:shadow-[0_14px_30px_rgba(0,0,0,0.18)] sm:min-h-[7.5rem] sm:p-4">
+            <div className="w-full text-center text-[0.56rem] font-medium uppercase leading-tight tracking-[0.06em] text-white/50 sm:text-xs sm:leading-4 sm:tracking-[0.24em]">
               Warehouses
             </div>
             <div className="w-full text-center text-xl font-semibold leading-none text-white sm:text-2xl">
               {new Set(products.flatMap((product) => product.inventory.map((entry) => entry.warehouseId))).size}
             </div>
           </div>
-          <div className="flex h-full min-h-[6.25rem] flex-col items-center justify-between rounded-2xl border border-white/10 bg-black/20 p-3 transition-all duration-200 ease-out hover:-translate-y-1 hover:scale-[1.01] hover:border-white/18 hover:bg-black/28 hover:shadow-[0_14px_30px_rgba(0,0,0,0.18)] sm:min-h-[7.5rem] sm:p-4">
-            <div className="w-full text-center text-[0.48rem] uppercase leading-none tracking-[0.02em] text-white/45 sm:text-xs sm:leading-4 sm:tracking-[0.24em]">
+          <div className="flex h-full min-h-[5.75rem] flex-col items-center justify-between rounded-2xl border border-white/10 bg-black/20 p-2.5 transition-all duration-200 ease-out hover:-translate-y-1 hover:scale-[1.01] hover:border-white/18 hover:bg-black/28 hover:shadow-[0_14px_30px_rgba(0,0,0,0.18)] sm:min-h-[7.5rem] sm:p-4">
+            <div className="w-full text-center text-[0.56rem] font-medium uppercase leading-tight tracking-[0.06em] text-white/50 sm:text-xs sm:leading-4 sm:tracking-[0.24em]">
               Inventory Rows
             </div>
             <div className="w-full text-center text-xl font-semibold leading-none text-white sm:text-2xl">
