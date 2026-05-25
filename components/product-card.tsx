@@ -158,7 +158,6 @@ function ProductCardInner({ product }: ProductCardProps) {
               <CardDescription className="text-balance">{product.description ?? ""}</CardDescription>
             </div>
             <div className="shrink-0 text-left sm:text-right">
-              <div className="text-[0.65rem] uppercase tracking-[0.24em] text-white/45">Available</div>
               {/* color the total available according to thresholds: 0=red, <=3=amber, >3=green */}
               <div
                 className={
