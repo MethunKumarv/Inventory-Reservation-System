@@ -36,8 +36,8 @@ export default async function Home() {
   }))
 
   return (
-    <main className="mx-auto max-w-7xl px-4 py-5 sm:px-6 sm:py-8 lg:px-8 md:min-h-screen">
-      <div className="hero mb-7 flex flex-col gap-4 rounded-[2rem] border border-white/10 bg-white/5 p-5 backdrop-blur sm:mb-10 sm:p-8 md:flex-row md:items-end md:justify-between">
+    <main className="mx-auto min-h-screen max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+      <div className="mb-10 flex flex-col gap-4 rounded-[2rem] border border-white/10 bg-white/5 p-8 backdrop-blur md:flex-row md:items-end md:justify-between">
         <div className="max-w-3xl space-y-3">
           <Link
             href="/"
@@ -46,7 +46,7 @@ export default async function Home() {
           >
             Inventory Reservation System
           </Link>
-          <h1 className="text-3xl font-semibold tracking-tight text-balance sm:text-5xl">
+          <h1 className="text-4xl font-semibold tracking-tight text-balance sm:text-5xl">
             Reserve stock safely while checkout is in progress.
           </h1>
           <p className="max-w-2xl text-base leading-7 text-white/70 sm:text-lg">
