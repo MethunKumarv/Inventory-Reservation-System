@@ -36,3 +36,22 @@ body {
 .text-balance {
   text-wrap: balance;
 }
+
+/* Reduce top/bottom padding and spacing for touch devices (e.g., mobile devices
+   even when "Request Desktop Site" is enabled and the viewport becomes large).
+   This uses the hover/pointer media features to detect touch-first devices. */
+@media (hover: none) and (pointer: coarse) {
+  main {
+    padding-top: 0.75rem; /* reduce main vertical padding */
+    padding-bottom: 0.75rem;
+  }
+  .hero {
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+    margin-bottom: 1rem;
+    gap: 0.5rem;
+  }
+  .hero .max-w-3xl > h1 {
+    font-size: 1.5rem; /* slightly reduce hero title on touch devices */
+  }
+}
