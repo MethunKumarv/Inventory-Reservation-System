@@ -50,8 +50,21 @@ body {
     padding-bottom: 0.75rem;
     margin-bottom: 1rem;
     gap: 0.5rem;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    box-shadow: none !important;
   }
   .hero .max-w-3xl > h1 {
     font-size: 1.5rem; /* slightly reduce hero title on touch devices */
+  }
+  /* Hide the small badge/link at the top on touch devices when desktop UA is requested */
+  .hero .max-w-3xl > a[aria-label="Go to the landing page"] {
+    display: none !important;
+  }
+
+  /* Disable expensive transitions and shadows for touch devices to reduce perceived lag */
+  .hero, .hero * {
+    transition: none !important;
+    will-change: auto !important;
   }
 }
