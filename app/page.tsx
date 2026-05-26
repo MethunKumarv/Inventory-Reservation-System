@@ -36,7 +36,7 @@ export default async function Home() {
   }))
 
   return (
-    <main className="mx-auto min-h-screen max-w-7xl px-4 py-5 sm:px-6 sm:py-8 lg:px-8">
+    <main className="mx-auto max-w-7xl px-4 py-5 sm:px-6 sm:py-8 lg:px-8 md:min-h-screen">
       <div className="mb-7 flex flex-col gap-4 rounded-[2rem] border border-white/10 bg-white/5 p-5 backdrop-blur sm:mb-10 sm:p-8 md:flex-row md:items-end md:justify-between">
         <div className="max-w-3xl space-y-3">
           <Link

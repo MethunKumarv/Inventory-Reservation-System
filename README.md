@@ -92,6 +92,25 @@ The seed script creates 6 products, 3 warehouses, and realistic inventory quanti
 
 The example file [`.env.example`](.env.example) is included for local setup.
 
+## Clearing Local Caches
+
+If you need to free disk space or remove stale build artifacts during development, remove these local caches in the project root:
+
+- `.next` — Next.js build cache and runtime artifacts
+- `node_modules/.cache` — tooling cache for some packages
+- `.turbo` — Turbopack or turbo cache (if present)
+- `.vercel` — local Vercel artifacts (if present)
+
+You can safely delete these folders and then rebuild. Example (PowerShell):
+
+```powershell
+Remove-Item -Recurse -Force .next
+Remove-Item -Recurse -Force "node_modules/.cache"
+npm cache clean --force
+```
+
+Run `npm run build` after clearing caches to regenerate artifacts.
+
 ## Project Structure
 
 - [app](app)
